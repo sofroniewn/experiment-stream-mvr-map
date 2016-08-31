@@ -68,8 +68,11 @@ module.exports = function () {
             map = nextMap[0]
             linkedFlag = true
             trialStream.push({
-              map: map,
-              trialNumber: trialNumber
+              maze: map,
+              trial: trialNumber,
+              init: false,
+              link: true,
+              advance: false
             })
           } else {
             // position[0] -= (map.links[link.component][0][0] - map.links[link.component-1][0][0])
@@ -175,9 +178,11 @@ module.exports = function () {
       position = [playerStart[0], playerStart[1]]
       advancedFlag = true
       trialStream.push({
-        map: map,
-        trialNumber: trialNumber,
-        init: false
+        maze: map,
+        trial: trialNumber,
+        init: false,
+        link: false,
+        advance: true
       })
     },
     initTrial: function(newMap) {
@@ -188,9 +193,11 @@ module.exports = function () {
       position = [playerStart[0], playerStart[1]]
       advancedFlag = true
       trialStream.push({
-        map: map,
-        trialNumber: trialNumber,
+        maze: map,
+        trial: trialNumber,
         init: true,
+        link: false,
+        advance: false
       })
     },
     trialStream: trialStream
