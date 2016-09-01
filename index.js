@@ -4,6 +4,7 @@ var collision = require('line-to-lines')
 var inside = require('point-in-polygon')
 var math = require('mathjs')
 var from = require('from2')
+var now = require('performance-now')
 
 function convertMap (maze) {
   var map = {}
@@ -43,15 +44,18 @@ module.exports = function () {
   var map = null
   var nextMap = null
   var trialStream = from.obj(function () {})
+  var positionForward = null
+  var positionLateral = null
   var position = null
   var trialNumber = null
   var startTime = null
   var advancedFlag = false
   var playerStart = [0, .5]
+  var maze = null
 
   return {
     createStream: function () {
-      var prevTime = Date.now()
+      var prevTime = now()
       var reward = false
       var angles = [0, 90, 180]
       var collisionFlag = false
@@ -65,10 +69,11 @@ module.exports = function () {
             position[0] -= (map.links[link.component][0][0] - map.links[link.component+1][0][0])
             position[1] -= (map.links[link.component][0][1] - map.links[link.component+1][0][1])
             trialNumber++
-            map = nextMap[0]
+            maze = nextMap[0]
+            map = convertMap(maze)
             linkedFlag = true
             trialStream.push({
-              maze: map,
+              maze: maze,
               trial: trialNumber,
               init: false,
               link: true,
@@ -103,24 +108,27 @@ module.exports = function () {
 
       return through.obj(function (data, enc, callback) {
         if (startTime === null) {
-          startTime = Date.now()
+          startTime = now()
         }
-        var curTime = Date.now()
+        var curTime = now()
         var deltaTime = curTime - prevTime
         prevTime = curTime
         var elapsedTime = curTime - startTime
+        var dateTime = Date.now()
 
         collisionFlag = false
         linkedFlag = false
-        var delta = [data.velocity.lateral, data.velocity.forward]
-        position = move(position, delta)
-        
+        var delta = [data.velocityLateral, data.velocityForward]
+        position = move([positionLateral, positionForward], delta)
+        positionLateral = position[0]
+        positionForward = position[1]
+
         var wallDistance = [0, 0, 0]
         var hit = [[[[0, 0], [0, 0]], [[0, 0], [0, 0]]], [[[0, 0], [0, 0]], [[0, 0], [0, 0]]], [[[0, 0], [0, 0]], [[0, 0], [0, 0]]]]
         
         // measure distances to obstacles
         angles.forEach(function (ang, i) {
-          var start = position
+          var start = [positionLateral, positionForward]
           var hitI = distance(start, ang, map.borders)
           var link = distance(start, ang, map.links)
           if (hitI.distance > link.distance) {
@@ -141,44 +149,43 @@ module.exports = function () {
 
         reward = false
         map.triggers.forEach(function (poly) {
-          if (inside(position, poly)) reward = true
+          if (inside([positionLateral, positionForward], poly)) reward = true
         })
 
         callback(null, {
-          position: {
-            forward: position[1],
-            lateral: position[0],
-          },
-          velocity: data.velocity,
+          positionForward: positionForward,
+          positionLateral: positionLateral,
+          velocityForward: data.velocityForward,
+          velocityLateral: data.velocityLateral,
           response: data.response,
           reward: reward,
           trialNumber: trialNumber,
-          wallDistance: {
-            right: wallDistance[0],
-            forward: wallDistance[1],
-            left: wallDistance[2],
-          },
+          wallLeft: wallDistance[2],
+          wallRight: wallDistance[0],
+          wallForward: wallDistance[1],
           link: linkedFlag,
           collision: collisionFlag,
           advance: advancedFlag,
           deltaTime: deltaTime,
-          elapsedTime: elapsedTime,
-          time: curTime,
+          time: elapsedTime,
+          date: dateTime,
           hit: hit
         })
         advancedFlag = false
       })
     },
     updateTrial: function(newMap) {
-      nextMap = [convertMap(newMap)]
+      nextMap = [newMap]
     },
     advanceTrial: function() {
       trialNumber++
-      map = nextMap[0]
-      position = [playerStart[0], playerStart[1]]
+      maze = nextMap[0]
+      map = convertMap(maze)
+      positionForward = playerStart[1]
+      positionLateral = playerStart[0]
       advancedFlag = true
       trialStream.push({
-        maze: map,
+        maze: maze,
         trial: trialNumber,
         init: false,
         link: false,
@@ -187,13 +194,15 @@ module.exports = function () {
     },
     initTrial: function(newMap) {
       trialNumber = 0
-      map = convertMap(newMap)
-      nextMap = [convertMap(newMap)]
+      maze = newMap
+      map = convertMap(maze)
+      nextMap = [newMap]
       startTime = null
-      position = [playerStart[0], playerStart[1]]
+      positionForward = playerStart[1]
+      positionLateral = playerStart[0]
       advancedFlag = true
       trialStream.push({
-        maze: map,
+        maze: maze,
         trial: trialNumber,
         init: true,
         link: false,
