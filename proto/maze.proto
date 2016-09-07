@@ -1,0 +1,20 @@
+package maze;
+
+message Data {
+ required Maze maze=1;
+ required int32 trial=2;
+ required bool init=3; 
+ required bool link=4; 
+ required bool advance=5; 
+}
+message Maze {
+  repeated Coord area=1;
+  repeated Coord borders=2;
+  repeated Coord links=3;
+  repeated Coord triggers=4;
+  required string name=5;
+}
+message Coord {
+  repeated float x=1;
+  repeated float y=2;
+}

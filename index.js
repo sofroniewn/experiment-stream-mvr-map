@@ -5,6 +5,10 @@ var inside = require('point-in-polygon')
 var math = require('mathjs')
 var from = require('from2')
 var now = require('performance-now')
+var glob = require('glob')
+var protoBuf = require('protocol-buffers')
+var fs = require('fs')
+var jsonfile = require('jsonfile')
 
 function convertMap (maze) {
   var map = {}
@@ -52,9 +56,10 @@ module.exports = function () {
   var advancedFlag = false
   var playerStart = [0, .5]
   var maze = null
+  var trials = {}
 
   return {
-    createStream: function () {
+    createBehaviorStream: function () {
       var prevTime = now()
       var reward = false
       var angles = [0, 90, 180]
@@ -174,8 +179,8 @@ module.exports = function () {
         advancedFlag = false
       })
     },
-    updateTrial: function(newMap) {
-      nextMap = [newMap]
+    setNextTrial: function(key) {
+      nextMap = [trials[key]]
     },
     advanceTrial: function() {
       trialNumber++
@@ -192,11 +197,11 @@ module.exports = function () {
         advance: true
       })
     },
-    initTrial: function(newMap) {
+    setCurrentTrial: function(key) {
       trialNumber = 0
-      maze = newMap
+      maze = trials[key]
       map = convertMap(maze)
-      nextMap = [newMap]
+      nextMap = [maze]
       startTime = null
       positionForward = playerStart[1]
       positionLateral = playerStart[0]
@@ -208,6 +213,20 @@ module.exports = function () {
         link: false,
         advance: false
       })
+    },
+    getTrials: function () {
+      var files = glob.sync(__dirname + '/trials/*.maze', [])
+      files.forEach(function (el) {
+        obj = jsonfile.readFileSync(el)[0]
+        trials[obj.name] = obj
+      })
+      return Object.keys(trials)
+    },
+    getEncoders: function () {
+      return {
+        behavior: protoBuf(fs.readFileSync(__dirname + '/proto/behavior.proto')),
+        trial: protoBuf(fs.readFileSync(__dirname + '/proto/maze.proto'))
+      }
     },
     trialStream: trialStream
   }
