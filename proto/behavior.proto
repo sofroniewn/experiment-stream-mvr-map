@@ -10,7 +10,7 @@ message Data {
   required float wallForward=7;
   required bool response=8;
   required bool reward=9;
-  required uint32 trialNumber=10;
+  required uint32 trial=10;
   required bool link=11;
   required bool collision=12;
   required bool advance=13;

@@ -1,4 +1,4 @@
-package maze;
+package trial;
 
 message Data {
  required Maze maze=1;
