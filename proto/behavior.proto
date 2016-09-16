@@ -1,0 +1,20 @@
+package behavior;
+
+message Data {
+  required float positionForward=1;
+  required float positionLateral=2;
+  required float velocityForward=3;
+  required float velocityLateral=4;
+  required float wallLeft=5;
+  required float wallRight=6;
+  required float wallForward=7;
+  required bool response=8;
+  required bool reward=9;
+  required uint32 trial=10;
+  required bool link=11;
+  required bool collision=12;
+  required bool advance=13;
+  required float deltaTime=14;
+  required float time=15;
+  required uint32 date=16;
+}
