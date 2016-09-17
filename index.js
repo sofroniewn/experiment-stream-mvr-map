@@ -9,6 +9,7 @@ var glob = require('glob')
 var protoBuf = require('protocol-buffers')
 var fs = require('fs')
 var jsonfile = require('jsonfile')
+var viz = require('./visualization')
 
 function convertMap (maze) {
   var map = {}
@@ -230,6 +231,7 @@ module.exports = function () {
         trial: protoBuf(fs.readFileSync(__dirname + '/proto/trial.proto'))
       }
     },
-    trialStream: trialStream
+    trialStream: trialStream,
+    visualization: viz
   }
 }
