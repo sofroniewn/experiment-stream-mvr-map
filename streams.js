@@ -5,8 +5,6 @@ var inside = require('point-in-polygon')
 var math = require('mathjs')
 var from = require('from2')
 var now = require('performance-now')
-var glob = require('glob')
-var jsonfile = require('jsonfile')
 
 function convertMap (maze) {
   var map = {}
@@ -48,12 +46,6 @@ module.exports = function create () {
   var nextMap = null
   var maze = null
   var playerStart = [0, .5]
-  var trials = {}
-  var files = glob.sync(__dirname + '/trials/*.maze', [])
-  files.forEach(function (el) {
-    obj = jsonfile.readFileSync(el)[0]
-    trials[obj.name] = obj
-  })
   var behavior = {
     positionForward: playerStart[1],
     positionLateral: playerStart[0],
@@ -188,8 +180,8 @@ module.exports = function create () {
       callback(null, behavior)
     }),
     trial: trialStream,
-    setNextTrial: function(key) {
-      nextMap = [trials[key]]
+    setNextTrial: function(maze) {
+      nextMap = [maze]
     },
     advanceTrial: function() {
       maze = nextMap[0]
@@ -204,8 +196,7 @@ module.exports = function create () {
       behavior.positionLateral = playerStart[0]
       behavior.trial = trial.trial
     },
-    startTrial: function(key) {
-      maze = trials[key]
+    startTrial: function(maze) {
       map = convertMap(maze)
       nextMap = [maze]
       startTime = null

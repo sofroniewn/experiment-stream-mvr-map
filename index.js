@@ -17,7 +17,7 @@ module.exports = function () {
         obj = jsonfile.readFileSync(el)[0]
         trials[obj.name] = obj
       })
-      return Object.keys(trials)
+      return trials
     },
     getEncoders: function () {
       return {
