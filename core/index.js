@@ -193,10 +193,10 @@ module.exports = function create () {
       }
       callback()
     }),
-    setNextTrial: function(maze) {
+    next: function(maze) {
       nextMap = [maze]
     },
-    advanceTrial: function() {
+    advance: function() {
       maze = nextMap[0]
       map = convertMap(maze)
       trial.trial++
@@ -209,7 +209,7 @@ module.exports = function create () {
       behavior.positionLateral = playerStart[0]
       behavior.trial = trial.trial
     },
-    startTrial: function(maze) {
+    start: function(maze) {
       map = convertMap(maze)
       nextMap = [maze]
       startTime = null

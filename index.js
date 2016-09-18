@@ -1,5 +1,5 @@
 var visualization = require('./visualization')
-var create = require('./create')
+var core = require('./core')
 
 var glob = require('glob')
 var jsonfile = require('jsonfile')
@@ -8,7 +8,7 @@ var fs = require('fs')
 
 
 module.exports = {
-  create: create,
+  core: core,
   visualization: visualization,
   trials: function () {
     var trials = {}
