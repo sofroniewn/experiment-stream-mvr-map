@@ -1,5 +1,6 @@
 var writer = require('to2')
 var raf = require('raf')
+var from = require('from2')
 
 function convertMap (maze) {
   var map = {}
@@ -51,11 +52,11 @@ module.exports = function () {
   // })
   document.body.appendChild(controlPanel)
 
-var mazePanel = document.createElement('div')
-mazePanel.width = 500
-mazePanel.height = 800
-mazePanel.style.float = 'right'
-document.body.appendChild(mazePanel)
+  var mazePanel = document.createElement('div')
+  mazePanel.width = 500
+  mazePanel.height = 800
+  mazePanel.style.float = 'right'
+  document.body.appendChild(mazePanel)
 
   var results = {
     trial: 0,
@@ -74,7 +75,7 @@ document.body.appendChild(mazePanel)
   var rewards = 0
   var responses = 0
   var timeEl =  document.createElement('h2')
-  
+
   timeEl.innerHTML = 'Time: ' + (results.elapsedTime/1000).toFixed(1)
   controlPanel.appendChild(timeEl)
 
@@ -90,13 +91,26 @@ document.body.appendChild(mazePanel)
     LED.style.border = '2px solid white'
     return LED
   }
-  
+
   var rewardLED = createLED()
   var responseLED = createLED()
   var collisionLED = createLED()
   controlPanel.appendChild(rewardLED)
   controlPanel.appendChild(responseLED)
   controlPanel.appendChild(collisionLED)
+
+
+  var uiStream = from.obj(function () {})
+  var uiData = {
+    reward: false
+  }
+  var button = document.createElement('button')
+  button.innerHTML = 'Reward'
+  button.onclick = function () {
+    uiData.reward = true
+    uiStream.push(uiData)
+  }
+  controlPanel.appendChild(button)
 
   var wdL =  document.createElement('h2')
   wdL.innerHTML = 'Left wall distance: ' + results.wallLeft + ' mm'
@@ -146,17 +160,14 @@ document.body.appendChild(mazePanel)
 
 
 
-var canvas = document.createElement('canvas')
-canvas.width = 500
-canvas.height = 800
-canvas.style.backgroundColor = '#000000'
-mazePanel.appendChild(canvas)
-
-
-
+  var canvas = document.createElement('canvas')
+  canvas.width = 500
+  canvas.height = 800
+  canvas.style.backgroundColor = '#000000'
+  mazePanel.appendChild(canvas)
 
   return {
-    createStream: function (initMap) {
+    create: function (initMap) {
       map = convertMap(initMap)
 
       drawPolygon = function (context, points, props) {
@@ -290,6 +301,7 @@ mazePanel.appendChild(canvas)
     },
     updateTrial: function(newMap) {
       map = convertMap(newMap)
-    }
+    },
+    ui: uiStream
   }
 }

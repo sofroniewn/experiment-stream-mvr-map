@@ -5,6 +5,7 @@ var inside = require('point-in-polygon')
 var math = require('mathjs')
 var from = require('from2')
 var now = require('performance-now')
+var writer = require('to2')
 
 function convertMap (maze) {
   var map = {}
@@ -53,6 +54,8 @@ module.exports = function create () {
     velocityLateral: 0,
     response: false,
     reward: false,
+    target: false,
+    externalReward: false,
     trial: 0,
     wallLeft: 0,
     wallRight: 0,
@@ -169,10 +172,11 @@ module.exports = function create () {
       behavior.wallRight = wallDistance[0]
       behavior.wallForward = wallDistance[1]
 
-      behavior.reward = false
+      behavior.target = false
       map.triggers.forEach(function (poly) {
-        if (inside([behavior.positionLateral, behavior.positionForward], poly)) behavior.reward = true
+        if (inside([behavior.positionLateral, behavior.positionForward], poly)) behavior.target = true
       })
+      behavior.reward = (behavior.target || behavior.externalReward)
 
       behavior.advance = trial.advance
       trial.advance = false
@@ -180,6 +184,15 @@ module.exports = function create () {
       callback(null, behavior)
     }),
     trial: trialStream,
+    ui: writer.obj(function(data, enc, callback) {
+      if (data.reward) {
+        behavior.externalReward = true
+        setTimeout(function () {
+          behavior.externalReward = false
+        }, 250)
+      }
+      callback()
+    }),
     setNextTrial: function(maze) {
       nextMap = [maze]
     },
