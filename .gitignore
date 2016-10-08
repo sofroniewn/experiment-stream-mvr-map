@@ -1,2 +1,4 @@
 node_modules
-*.ipynb
+.ipynb_checkpoints
+*.pyc
+.DS_Store
