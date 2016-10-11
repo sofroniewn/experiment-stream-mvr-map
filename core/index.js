@@ -103,7 +103,7 @@ module.exports = function create () {
       behavior.collision = false
       behavior.link = false
 
-      var link = collision([[behavior.positionLateral, behavior.positionForward], [behavior.positionLateral + behavior.velocityLateral, behavior.positionForward + behavior.velocityForward]], map.links)        
+      var link = collision([[behavior.positionLateral, behavior.positionForward], [behavior.positionLateral + behavior.velocityLateral, behavior.positionForward + behavior.velocityForward]], map.links)
       var delta = [behavior.velocityLateral, behavior.velocityForward]
 
       if (link.component !== false) {

@@ -1,6 +1,7 @@
 var writer = require('to2')
 var raf = require('raf')
 var from = require('from2')
+//var line = require('lightning-line-streaming')
 
 function convertMap (maze) {
   var map = {}
@@ -122,41 +123,40 @@ module.exports = function () {
   wdF.innerHTML = 'Forward wall distance: ' + results.wallForward + ' mm'
   controlPanel.appendChild(wdF)
   var speedEl =  document.createElement('h2')
-  var speed = (results.velocityForward**2 + results.velocityLateral**2)**(0.5)
+  var speed = Math.pow(Math.pow(results.velocityForward,2) + Math.pow(results.velocityLateral,2),(0.5))*50
   speedEl.innerHTML = 'Speed: ' + speed.toFixed(1) + ' cm/s'
   controlPanel.appendChild(speedEl)
 
-  var line = require('lightning-line-streaming')
   var divG = document.createElement('div')
   divG.style.width='500px'
   var elG = controlPanel.appendChild(divG)
   var xTime = new Array(300).fill(0)
   var ySpeed = new Array(300).fill(0)
   var yDeltaTime = new Array(300).fill(0)
-  var vizGraph = new line(elG, {
-    'series': ySpeed,
-    'index': xTime,
-    'xaxis': 'Time (s)',
-    'yaxis': 'Speed (cm/s)',
-    'thickness': 7,
-    'color': [255, 100, 0]
-  }, [], {'zoom': false})
-  var yDomain = [0, 50]
-  var xDomain = [-7, 0]
-
-  var ySpread = Math.abs(yDomain[1] - yDomain[0]) || 1;
-  var xSpread = Math.abs(xDomain[1] - xDomain[0]) || 1;
-
-  vizGraph.x.domain([xDomain[0] - 0.05 * xSpread, xDomain[1] + 0.05 * xSpread])
-  vizGraph.y.domain([yDomain[0] - 0.05 * ySpread, yDomain[1] + 0.05 * ySpread])
-
-  vizGraph.updateAxis()
-  vizGraph.updateData({
-    'series': [ySpeed, yDeltaTime],
-    'index': xTime,
-    'thickness': [2, 2],
-    'color': [[255, 0, 0], [0, 0, 0]]
-  })
+  // var vizGraph = new line(elG, {
+  //   'series': ySpeed,
+  //   'index': xTime,
+  //   'xaxis': 'Time (s)',
+  //   'yaxis': 'Speed (cm/s)',
+  //   'thickness': 7,
+  //   'color': [255, 100, 0]
+  // }, [], {'zoom': false})
+  // var yDomain = [0, 50]
+  // var xDomain = [-7, 0]
+  //
+  // var ySpread = Math.abs(yDomain[1] - yDomain[0]) || 1;
+  // var xSpread = Math.abs(xDomain[1] - xDomain[0]) || 1;
+  //
+  // vizGraph.x.domain([xDomain[0] - 0.05 * xSpread, xDomain[1] + 0.05 * xSpread])
+  // vizGraph.y.domain([yDomain[0] - 0.05 * ySpread, yDomain[1] + 0.05 * ySpread])
+  //
+  // vizGraph.updateAxis()
+  // vizGraph.updateData({
+  //   'series': [ySpeed, yDeltaTime],
+  //   'index': xTime,
+  //   'thickness': [2, 2],
+  //   'color': [[255, 0, 0], [0, 0, 0]]
+  // })
 
 
   drawPolygon = function (context, points, props) {
@@ -237,7 +237,7 @@ module.exports = function () {
             stroke: '#AB051E',
             thickness: 2,
           })
-        }) 
+        })
       })
 
       if (results.reward) {
@@ -261,28 +261,28 @@ module.exports = function () {
       wdL.innerHTML = 'Left wall distance: ' + results.wallLeft.toPrecision(3) + ' mm'
       wdR.innerHTML = 'Right wall distance: ' + results.wallRight.toPrecision(3) + ' mm'
       wdF.innerHTML = 'Forward wall distance: ' + results.wallForward.toPrecision(3) + ' mm'
-      speed = (results.velocityForward**2 + results.velocityLateral**2)**(0.5)*50
+      speed = Math.pow(Math.pow(results.velocityForward,2) + Math.pow(results.velocityLateral,2),(0.5))*50
       speedEl.innerHTML = 'Speed: ' + speed.toFixed(1) + ' cm/s'
 
-      ySpeed.push(speed) 
-      yDeltaTime.push(results.deltaTime) 
-      xTime.push(results.time/1000)
-      yDeltaTime.shift()
-      ySpeed.shift()
-      xTime.shift()
-
-      xDomain[0] = -5+results.time/1000
-      xDomain[1] = results.time/1000
-      xSpread = Math.abs(xDomain[1] - xDomain[0]) || 1;
-      vizGraph.x.domain([xDomain[0] - 0.05 * xSpread, xDomain[1] + 0.05 * xSpread])
-
-      vizGraph.updateAxis()
-      vizGraph.updateData({
-        'series': [ySpeed, yDeltaTime],
-        'index': xTime,
-        'thickness': [2, 2],
-        'color': [[255, 0, 0], [0, 0, 0]]
-      })
+      // ySpeed.push(speed)
+      // yDeltaTime.push(results.deltaTime)
+      // xTime.push(results.time/1000)
+      // yDeltaTime.shift()
+      // ySpeed.shift()
+      // xTime.shift()
+      //
+      // xDomain[0] = -5+results.time/1000
+      // xDomain[1] = results.time/1000
+      // xSpread = Math.abs(xDomain[1] - xDomain[0]) || 1;
+      // vizGraph.x.domain([xDomain[0] - 0.05 * xSpread, xDomain[1] + 0.05 * xSpread])
+      //
+      // vizGraph.updateAxis()
+      // vizGraph.updateData({
+      //   'series': [ySpeed, yDeltaTime],
+      //   'index': xTime,
+      //   'thickness': [2, 2],
+      //   'color': [[255, 0, 0], [0, 0, 0]]
+      // })
     }
     raf(tick)
   })

@@ -1,5 +1,5 @@
 {
-  "name": "experiment-exp-mvr",
+  "name": "tinberg-exp-mvr",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -10,7 +10,13 @@
   "license": "MIT",
   "dependencies": {
     "from2": "^2.3.0",
+    "glob": "^7.1.1",
+    "jsonfile": "^2.4.0",
+    "line-to-lines": "0.0.1",
+    "point-in-polygon": "^1.0.1",
+    "protocol-buffers": "^3.1.6",
     "raf": "^3.3.0",
+    "ray-to-lines": "0.0.1",
     "through2": "^2.0.1",
     "to2": "^1.0.0"
   }
