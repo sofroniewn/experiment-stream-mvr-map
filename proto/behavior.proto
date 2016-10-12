@@ -14,7 +14,7 @@ message Data {
   required bool link=11;
   required bool collision=12;
   required bool advance=13;
-  required float deltaTime=14;
+  required float delta=14;
   required float time=15;
   required uint32 date=16;
   required bool externalReward=17;

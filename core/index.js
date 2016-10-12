@@ -63,7 +63,7 @@ module.exports = function create () {
     link: false,
     collision: false,
     advance: false,
-    deltaTime: 0,
+    delta: 0,
     time: 0,
     date: Date.now(),
     hit: null
@@ -89,11 +89,11 @@ module.exports = function create () {
     behavior: through.obj(function (data, enc, callback) {
       if (startTime === null) {
           startTime = now()
+          behavior.date = Date.now()
         }
 
       curTime = now()
-      behavior.date = Date.now()
-      behavior.deltaTime = curTime - prevTime
+      behavior.delta = curTime - prevTime
       behavior.time = curTime - startTime
       prevTime = curTime
 
